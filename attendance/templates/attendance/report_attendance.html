@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Report{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">📈 Attendance Report</h2>
+
+    <!-- Filter Options -->
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label for="student" class="form-label">Student</label>
+            <select id="student" name="student" class="form-select">
+                <option value="">All Students</option>
+                <!-- {% for student in students %} -->
+                <option value="{{ student.id }}">{{ student.name }}</option>
+                <!-- {% endfor %} -->
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" id="date" name="date" class="form-control">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+        </div>
+    </form>
+
+    <!-- Attendance Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Attendance Summary</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- {% for record in attendance_records %} -->
+                        <tr>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.student.name }}</td>
+                            <td>{{ record.subject.name }}</td>
+                            <td>
+                                {% if record.status == 'Present' %}
+                                    <span class="badge bg-success">Present</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Absent</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <!-- {% empty %} -->
+                        <tr>
+                            <td colspan="4" class="text-center">No records found.</td>
+                        </tr>
+                        <!-- {% endfor %} -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Results Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">📊 Results Dashboard</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'results:publish_results' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📤 Publish Results</h5>
+            <p class="card-text text-muted">Enter and publish exam results.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'results:view_results' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📖 View Results</h5>
+            <p class="card-text text-muted">Check student performance.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'results:report_results' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📈 Results Report</h5>
+            <p class="card-text text-muted">Analyze trends and performance reports.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

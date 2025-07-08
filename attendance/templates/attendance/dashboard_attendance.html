@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">📊 Attendance Dashboard</h2>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'attendance:mark_attendance' %}" class="text-decoration-none">
+
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📝 Mark Attendance</h5>
+            <p class="card-text text-muted">Record attendance for classes.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <!-- <div class="col-md-4">
+      {% if user.role == 'student' %}
+      <a href="{% url 'attendance:view_student' %}" class="text-decoration-none">
+        {% elif user.role == 'teacher' %}
+        <a href="{% url 'attendance:view_teacher' %}" class="text-decoration-none">
+          {% elif user.role == 'admin' %}
+          <a href="{% url 'attendance:view_admin' %}" class="text-decoration-none">
+            {% else %}
+            <a href="#" class="text-decoration-none disabled" tabindex="-1" aria-disabled="true">
+              {% endif %}
+
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">📋 View Records</h5>
+                  <p class="card-text text-muted">See attendance logs and summaries.</p>
+                </div>
+              </div>
+            </a>
+    </div> -->
+
+    <div class="col-md-4">
+      <a href="{% url 'attendance:view_teacher' %}" class="text-decoration-none">
+
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📋 View Records</h5>
+            <p class="card-text text-muted">See attendance logs and summaries.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4">
+      <a href="{% url 'attendance:attendance_report' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📈 Generate Report</h5>
+            <p class="card-text text-muted">Export reports by student, date or subject.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Timetable Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">📅 Timetable Dashboard</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'timetable:create_timetable' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">🕓 Create Timetable</h5>
+            <p class="card-text text-muted">Design the weekly class schedule.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'timetable:view_timetable' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📖 View Timetable</h5>
+            <p class="card-text text-muted">See current class timings and rooms.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'timetable:download_timetable' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">⬇️ Download Timetable</h5>
+            <p class="card-text text-muted">Export timetable as PDF/CSV.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

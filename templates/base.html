@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LMS - Learning & Education Management System{% endblock %}</title>
+
+    {% load static %}
+    <!-- bootstrap css link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
+    <!-- font awesome css link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- custom css -->
+    {% block custom_css %}{% endblock %}
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header class="bg-primary">
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <!-- Brand/Logo -->
+      <a class="navbar-brand fw-bold" href="/">
+        <i class="fa-solid fa-graduation-cap me-2"></i>
+        LMS System <br>Department of Electronics<br> and Computer Engineering
+      </a>
+
+      <!-- Mobile Toggle Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navigation Links -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="/attendance/">Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="/results/">Results</a></li>
+          <li class="nav-item"><a class="nav-link" href="/timetable/">Timetable</a></li>
+          <li class="nav-item"><a class="nav-link" href="/assignments/">Assignments</a></li>
+          <li class="nav-item"><a class="nav-link" href="/materials/">Materials</a></li>
+        </ul>
+
+        <!-- Right side buttons -->
+        <ul class="navbar-nav ms-auto align-items-center">
+          <!-- User Profile Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="fa-solid fa-user-circle me-1"></i> Profile
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/users/">View Profile</a></li>
+              <li><a class="dropdown-item" href="/users/settings/">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/logout/">Logout</a></li>
+            </ul>
+          </li>
+
+          <!-- Extra Button -->
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-light btn-sm" href="/help/" role="button">
+              <i class="fa-solid fa-circle-question me-1"></i> Help
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        {% block content %} {% endblock %}
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <!-- System Overview -->
+                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-primary mb-3">
+                        <i class="fa-solid fa-graduation-cap me-2"></i>ECE LMS/EMS
+                    </h5>
+                    <p class="text-muted">
+                        A unified Learning & Education Management System for streamlined academic tracking, resource
+                        sharing, and user management for both faculty and students.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="text-muted me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-muted me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-muted me-3"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Navigation Links -->
+                <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                    <h6 class="text-primary mb-3">Quick Links</h6>
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="list-unstyled text-start">
+                                <li class="mb-2"><a href="/attendance/" class="text-muted text-decoration-none">📅
+                                        Attendance</a></li>
+                                <li class="mb-2"><a href="/results/" class="text-muted text-decoration-none">📈
+                                        Results</a></li>
+                                <li class="mb-2"><a href="/timetable/" class="text-muted text-decoration-none">🗓️
+                                        Timetable</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul class="list-unstyled text-start">
+                                <li class="mb-2"><a href="/assignments/" class="text-muted text-decoration-none">📝
+                                        Assignments</a></li>
+                                <li class="mb-2"><a href="/materials/" class="text-muted text-decoration-none">📚
+                                        Materials</a></li>
+                                <li class="mb-2"><a href="/users/" class="text-muted text-decoration-none">👥 User
+                                        Management</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Newsletter -->
+                <div class="col-lg-3 col-md-12">
+                    <h6 class="text-primary mb-3">Newsletter</h6>
+                    <p class="text-muted mb-3">Stay updated with new features and educational content.</p>
+                    <form class="d-flex">
+                        <input type="email" class="form-control form-control-sm me-2" placeholder="Your email">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">
+                        &copy; {% now "Y" %} ECE LMS/EMS. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Privacy
+                                Policy</a></li>
+                        <li class="list-inline-item"><span class="text-muted">|</span></li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Terms of
+                                Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK"
+        crossorigin="anonymous"></script>
+
+    <!-- custom js -->
+     
+    {% block custom_js %} {% endblock %}
+    <script src="{% static 'js/script.js' %}"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | LMS/EMS{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">📊 Dashboard Overview</h2>
+
+    <div class="row g-4">
+        <!-- Attendance -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📅 Attendance</h5>
+                    <p class="card-text">View and manage class attendance records.</p>
+                    <a href="/attendance/" class="btn btn-outline-primary btn-sm">Go to Attendance</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📈 Results</h5>
+                    <p class="card-text">Check academic results and performance reports.</p>
+                    <a href="/results/" class="btn btn-outline-success btn-sm">Go to Results</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignments -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📝 Assignments</h5>
+                    <p class="card-text">Upload, assign, and track assignments.</p>
+                    <a href="/assignments/" class="btn btn-outline-warning btn-sm">Go to Assignments</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Materials -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📚 Materials</h5>
+                    <p class="card-text">Upload, share, and access study resources.</p>
+                    <a href="/materials/" class="btn btn-outline-info btn-sm">Go to Materials</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timetable -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🗓️ Timetable</h5>
+                    <p class="card-text">Create and view class schedules.</p>
+                    <a href="/timetable/" class="btn btn-outline-secondary btn-sm">Go to Timetable</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Users</h5>
+                    <p class="card-text">Manage student, teacher, and admin accounts.</p>
+                    <a href="/users/" class="btn btn-outline-dark btn-sm">Go to Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div><br></div>
+{% endblock %}

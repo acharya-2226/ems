@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">👥 User Management Dashboard</h2>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'users:add_user' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">➕ Add User</h5>
+            <p class="card-text text-muted">Register students, teachers, or admins.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4">
+      <a href="{% url 'users:view_users' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">🔍 View Users</h5>
+            <p class="card-text text-muted">Manage and search existing users.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4">
+      <a href="{% url 'users:roles_permissions' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">🛠️ Roles & Permissions</h5>
+            <p class="card-text text-muted">Assign or update user roles.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

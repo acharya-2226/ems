@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}User Roles & Permissions{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">🛠️ User Roles & Permissions</h2>
+
+  <div class="mb-3">
+    <a href="#" class="btn btn-primary disabled">➕ Add New Role (Coming Soon)</a>
+  </div>
+
+  <table class="table table-striped table-bordered shadow-sm">
+    <thead class="table-info">
+      <tr>
+        <th>ID</th>
+        <th>Role Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Admin</td>
+        <td>Full access to all system features.</td>
+        <td>
+          <button class="btn btn-sm btn-warning" disabled>Edit</button>
+          <button class="btn btn-sm btn-danger" disabled>Delete</button>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Teacher</td>
+        <td>Manage courses and students.</td>
+        <td>
+          <button class="btn btn-sm btn-warning" disabled>Edit</button>
+          <button class="btn btn-sm btn-danger" disabled>Delete</button>
+        </td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Student</td>
+        <td>Access own coursework and grades.</td>
+        <td>
+          <button class="btn btn-sm btn-warning" disabled>Edit</button>
+          <button class="btn btn-sm btn-danger" disabled>Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

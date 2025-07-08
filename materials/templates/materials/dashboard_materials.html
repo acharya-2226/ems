@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Materials Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">📚 Materials Dashboard</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'materials:upload_material' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📤 Upload Material</h5>
+            <p class="card-text text-muted">Upload resources like PDFs or slides.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'materials:view_materials' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📖 View Materials</h5>
+            <p class="card-text text-muted">Access and browse learning content.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'materials:insights_materials' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📊 Material Insights</h5>
+            <p class="card-text text-muted">Analyze usage and access data.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

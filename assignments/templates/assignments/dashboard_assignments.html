@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Assignments Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">📝 Assignments Dashboard</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <a href="{% url 'assignments:upload_assignments' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📤 Upload Assignment</h5>
+            <p class="card-text text-muted">Add new assignments for students.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'assignments:submissions_assignments' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📝 Submissions</h5>
+            <p class="card-text text-muted">Review submitted assignments.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'assignments:report_assignments' %}" class="text-decoration-none">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">📈 Assignment Report</h5>
+            <p class="card-text text-muted">View insights and stats on assignments.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
