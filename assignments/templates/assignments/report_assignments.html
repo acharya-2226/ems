@@ -4,5 +4,29 @@
 <div class="container mt-5">
   <h2 class="text-primary">📈 Assignment Report</h2>
   <p>Visual and tabular summary of assignment performances.</p>
+
+  <canvas id="assignmentChart" width="400" height="200"></canvas>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('assignmentChart').getContext('2d');
+const assignmentChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4'],
+        datasets: [{
+            label: 'Average Score',
+            data: [85, 90, 75, 88],
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
 {% endblock %}

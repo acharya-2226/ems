@@ -1,9 +1,172 @@
 {% extends 'base.html' %}
+
 {% block title %}View Results{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-  <h2 class="text-primary">📊 View Results</h2>
-  <p>This page displays published results by subject, student or class.</p>
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h2 class="mb-0">📊 View Results</h2>
+            <p class="mb-0 opacity-75">Browse and manage student results</p>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">🔍 Filter Results</h5>
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search_query }}" placeholder="Student name, roll number, subject...">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="semester" class="form-label">Semester</label>
+                            <select class="form-select" id="semester" name="semester">
+                                <option value="">All Semesters</option>
+                                {% for sem in semesters %}
+                                    <option value="{{ sem }}" {% if semester_filter == sem|stringformat:"s" %}selected{% endif %}>
+                                        Semester {{ sem }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="year" class="form-label">Year</label>
+                            <select class="form-select" id="year" name="year">
+                                <option value="">All Years</option>
+                                {% for yr in years %}
+                                    <option value="{{ yr }}" {% if year_filter == yr|stringformat:"s" %}selected{% endif %}>
+                                        {{ yr }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="published" class="form-label">Status</label>
+                            <select class="form-select" id="published" name="published">
+                                <option value="">All Results</option>
+                                <option value="true" {% if published_filter == 'true' %}selected{% endif %}>Published</option>
+                                <option value="false" {% if published_filter == 'false' %}selected{% endif %}>Draft</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">Filter</button>
+                            <a href="{% url 'results:view_results' %}" class="btn btn-outline-secondary">Clear</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            {% if results %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student</th>
+                                <th>Roll Number</th>
+                                <th>Subject</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                                <th>Percentage</th>
+                                <th>Semester</th>
+                                <th>Year</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ result.student.user.get_full_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ result.student.department }}</small>
+                                    </td>
+                                    <td>{{ result.student.roll_number }}</td>
+                                    <td>
+                                        <strong>{{ result.subject.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ result.subject.code }}</small>
+                                    </td>
+                                    <td>{{ result.marks_obtained }}/{{ result.total_marks }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if result.grade == 'A+' %}bg-success
+                                            {% elif result.grade == 'A' %}bg-info
+                                            {% elif result.grade == 'B+' or result.grade == 'B' %}bg-primary
+                                            {% elif result.grade == 'C+' or result.grade == 'C' %}bg-warning
+                                            {% elif result.grade == 'D' %}bg-secondary
+                                            {% else %}bg-danger
+                                            {% endif %}">
+                                            {{ result.grade }}
+                                        </span>
+                                    </td>
+                                    <td>{{ result.percentage }}%</td>
+                                    <td>{{ result.semester }}</td>
+                                    <td>{{ result.year }}</td>
+                                    <td>
+                                        {% if result.published %}
+                                            <span class="badge bg-success">Published</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Draft</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if result.created_at %}
+                                            {{ result.created_at|date:"M d, Y" }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'results:edit_result' result.id %}" 
+                                               class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'results:delete_result' result.id %}" 
+                                               class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <p class="text-muted mb-0">
+                        Showing {{ results|length }} result{{ results|length|pluralize }}
+                    </p>
+                    <a href="{% url 'results:publish_results' %}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Add New Result
+                    </a>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Results Found</h4>
+                    <p class="text-muted">No results match your current filters.</p>
+                    <a href="{% url 'results:publish_results' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add First Result
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
-```

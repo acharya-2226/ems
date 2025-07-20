@@ -1,39 +1,41 @@
-"""
-URL configuration for ece_lms_ems project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
-
+from .views import home, show_all_urls
+from django.views.generic import TemplateView
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='dashboard'),
 
-    # Dashboard page
-    path('', TemplateView.as_view(template_name='dashboard.html'), name='dashboard'),
-
-    # App-level includes (if any)
+    # App-specific URLs
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    
+    path('logout/', auth_views.LogoutView.as_view(template_name='logout.html'), name='logout'),
     path('attendance/', include('attendance.urls')),
     path('results/', include('results.urls')),
     path('assignments/', include('assignments.urls')),
     path('timetable/', include('timetable.urls')),
     path('materials/', include('materials.urls')),
     path('users/', include('users.urls')),
+    
+    
+    path('help/', TemplateView.as_view(template_name='help.html'), name='help'),  # static help page
+
+    # Developer tool
+    path('show-all-urls/', staff_member_required(show_all_urls), name='show_all_urls'),
+
+    # Authentication
+    path('accounts/', include('django.contrib.auth.urls')),  # built-in login/logout
+    path('accounts/', include('allauth.urls')),              # django-allauth
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Media file handling in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -24,58 +24,65 @@
 
 <body class="d-flex flex-column min-vh-100">
     <header class="bg-primary">
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <!-- Brand/Logo -->
-      <a class="navbar-brand fw-bold" href="/">
-        <i class="fa-solid fa-graduation-cap me-2"></i>
-        LMS System <br>Department of Electronics<br> and Computer Engineering
-      </a>
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <!-- Brand/Logo -->
+                <a class="navbar-brand fw-bold" href="/">
+                    <i class="fa-solid fa-graduation-cap me-2"></i>
+                    LMS System <br>Department of Electronics<br> and Computer Engineering
+                </a>
 
-      <!-- Mobile Toggle Button -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-      <!-- Navigation Links -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="/attendance/">Attendance</a></li>
-          <li class="nav-item"><a class="nav-link" href="/results/">Results</a></li>
-          <li class="nav-item"><a class="nav-link" href="/timetable/">Timetable</a></li>
-          <li class="nav-item"><a class="nav-link" href="/assignments/">Assignments</a></li>
-          <li class="nav-item"><a class="nav-link" href="/materials/">Materials</a></li>
-        </ul>
+                <!-- Navigation Links -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" href="/attendance/">Attendance</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/results/">Results</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/timetable/">Timetable</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/assignments/">Assignments</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/materials/">Materials</a></li>
+                    </ul>
 
-        <!-- Right side buttons -->
-        <ul class="navbar-nav ms-auto align-items-center">
-          <!-- User Profile Dropdown -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <i class="fa-solid fa-user-circle me-1"></i> Profile
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/users/">View Profile</a></li>
-              <li><a class="dropdown-item" href="/users/settings/">Settings</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="/logout/">Logout</a></li>
-            </ul>
-          </li>
+                    <!-- Right side buttons -->
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <!-- User Profile Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user-circle me-1"></i> Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/users/">View Profile</a></li>
+                                <li><a class="dropdown-item" href="/users/settings/">Settings</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-link">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
 
-          <!-- Extra Button -->
-          <li class="nav-item ms-3">
-            <a class="btn btn-outline-light btn-sm" href="/help/" role="button">
-              <i class="fa-solid fa-circle-question me-1"></i> Help
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</header>
+                        <!-- Extra Button -->
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-outline-light btn-sm" href="/help/" role="button">
+                                <i class="fa-solid fa-circle-question me-1"></i> Help
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <!-- Main Content -->
     <main class="flex-grow-1">
@@ -175,7 +182,7 @@
         crossorigin="anonymous"></script>
 
     <!-- custom js -->
-     
+
     {% block custom_js %} {% endblock %}
     <script src="{% static 'js/script.js' %}"></script>
 

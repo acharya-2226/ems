@@ -6,9 +6,24 @@
 <div class="container mt-4">
     <h2 class="mb-3">✅ Mark Attendance</h2>
 
-    {% if students %}
-        <form method="POST" class="mb-4">
-            {% csrf_token %}
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="{{ form.date.id_for_label }}" class="form-label">{{ form.date.label }}</label>
+                {{ form.date }}
+                {{ form.date.errors }}
+            </div>
+            <div class="col-md-6">
+                <label for="{{ form.subject.id_for_label }}" class="form-label">{{ form.subject.label }}</label>
+                {{ form.subject }}
+                {{ form.subject.errors }}
+            </div>
+        </div>
+
+        {% if students %}
             <div class="table-responsive">
                 <table class="table table-bordered align-middle">
                     <thead class="table-dark">
@@ -23,10 +38,10 @@
                         {% for student in students %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ student.name }}</td>
+                                <td>{{ student.full_name }}</td>
                                 <td>{{ student.roll_number }}</td>
                                 <td>
-                                    <select name="status_{{ student.id }}" class="form-select">
+                                    <select name="student_{{ student.id }}" class="form-select">
                                         <option value="Present">Present</option>
                                         <option value="Absent">Absent</option>
                                     </select>
@@ -38,11 +53,11 @@
             </div>
 
             <button type="submit" class="btn btn-success mt-3">Submit Attendance</button>
-        </form>
-    {% else %}
-        <div class="alert alert-info mt-4" role="alert">
-            No classes assigned to you at the moment to mark attendance. Please check back later.
-        </div>
-    {% endif %}
+        {% else %}
+            <div class="alert alert-info mt-4" role="alert">
+                No students available to mark attendance.
+            </div>
+        {% endif %}
+    </form>
 </div>
 {% endblock %}

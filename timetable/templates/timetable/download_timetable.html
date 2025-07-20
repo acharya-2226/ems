@@ -1,8 +1,32 @@
-{% extends 'base.html' %}
-{% block title %}Download Timetable{% endblock %}
+{% extends 'timetable/base.html' %}
+
 {% block content %}
-<div class="container mt-5">
-  <h2 class="text-primary">⬇️ Download Timetable</h2>
-  <p>Download the latest timetable in PDF or CSV formats.</p>
+<h2>Download Timetable</h2>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">{{ filter_form.day }}</div>
+    <div class="col-md-3">{{ filter_form.semester }}</div>
+    <div class="col-md-3">{{ filter_form.teacher }}</div>
+    <div class="col-md-3">{{ filter_form.subject }}</div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-secondary">Apply Filters</button>
+        <a href="{% url 'timetable:download_timetable' %}" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Export Options</h5>
+        <p class="card-text">Total entries to download: <strong>{{ total_count }}</strong></p>
+        
+        <div class="d-flex gap-2">
+            <a href="?format=csv{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}" class="btn btn-success">
+                📄 Download CSV
+            </a>
+            <a href="?format=json{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}" class="btn btn-info">
+                📋 Download JSON
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

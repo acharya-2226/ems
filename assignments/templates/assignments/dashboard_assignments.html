@@ -1,39 +1,51 @@
 {% extends 'base.html' %}
 {% block title %}Assignments Dashboard{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5" role="main">
   <h2 class="mb-4 text-primary">📝 Assignments Dashboard</h2>
   <div class="row g-4">
     <div class="col-md-4">
-      <a href="{% url 'assignments:upload_assignments' %}" class="text-decoration-none">
-        <div class="card shadow-sm h-100">
+      <a href="{% url 'assignments:upload_assignments' %}" class="text-decoration-none" aria-label="Upload Assignment">
+        <div class="card shadow-sm h-100 hover-shadow">
           <div class="card-body">
             <h5 class="card-title">📤 Upload Assignment</h5>
             <p class="card-text text-muted">Add new assignments for students.</p>
+            <span class="btn btn-sm btn-primary mt-2">Go</span>
           </div>
         </div>
       </a>
     </div>
     <div class="col-md-4">
-      <a href="{% url 'assignments:submissions_assignments' %}" class="text-decoration-none">
-        <div class="card shadow-sm h-100">
+      <a href="{% url 'assignments:submissions_assignments' %}" class="text-decoration-none" aria-label="View Submissions">
+        <div class="card shadow-sm h-100 hover-shadow">
           <div class="card-body">
             <h5 class="card-title">📝 Submissions</h5>
             <p class="card-text text-muted">Review submitted assignments.</p>
+            <span class="btn btn-sm btn-primary mt-2">Go</span>
           </div>
         </div>
       </a>
     </div>
     <div class="col-md-4">
-      <a href="{% url 'assignments:report_assignments' %}" class="text-decoration-none">
-        <div class="card shadow-sm h-100">
+      <a href="{% url 'assignments:report_assignments' %}" class="text-decoration-none" aria-label="Assignment Report">
+        <div class="card shadow-sm h-100 hover-shadow">
           <div class="card-body">
             <h5 class="card-title">📈 Assignment Report</h5>
             <p class="card-text text-muted">View insights and stats on assignments.</p>
+            <span class="btn btn-sm btn-primary mt-2">Go</span>
           </div>
         </div>
       </a>
     </div>
   </div>
 </div>
+
+<style>
+.hover-shadow:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+</style>
+
 {% endblock %}

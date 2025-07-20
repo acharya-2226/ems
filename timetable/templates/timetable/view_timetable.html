@@ -1,8 +1,52 @@
-{% extends 'base.html' %}
-{% block title %}View Timetable{% endblock %}
+{% extends 'timetable/base.html' %}
+
 {% block content %}
-<div class="container mt-5">
-  <h2 class="text-primary">📅 View Timetable</h2>
-  <p>Check the current class schedules and room allocations.</p>
+<h2>Weekly Timetable View</h2>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">{{ filter_form.semester }}</div>
+    <div class="col-md-4">{{ filter_form.teacher }}</div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        <a href="{% url 'timetable:view_timetable' %}" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for time_slot in time_slots %}
+            <tr>
+                <td class="fw-bold">{{ time_slot }}</td>
+                {% for day in days %}
+                <td style="min-width: 120px;">
+                    {% for timetable_id, timetable in weekly_schedule.items %}
+                        {% if timetable.day == day and timetable.time_slot == time_slot %}
+                        <div class="small bg-light p-1 rounded">
+                            <strong>{{ timetable.subject.code }}</strong><br>
+                            {{ timetable.teacher.first_name|default:timetable.teacher.username }}<br>
+                            <em>{{ timetable.room.name }}</em><br>
+                            <span class="badge bg-secondary">Sem {{ timetable.semester }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

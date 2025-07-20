@@ -3,6 +3,16 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="text-primary">📤 Upload Assignments</h2>
-  <p>This page allows instructors to upload assignments for students.</p>
+  <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {{ form.as_p }}
+    <div class="mt-3 d-flex justify-content-between">
+      <a href="{% url 'assignments:dashboard_assignments' %}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Upload</button>
+    </div>
+  </form>
 </div>
 {% endblock %}

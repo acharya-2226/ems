@@ -1,15 +1,58 @@
-{% extends 'base.html' %}
-{% block title %}Edit Timetable{% endblock %}
+{% extends 'timetable/base.html' %}
+
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4 text-primary">📅 Edit Timetable</h2>
-    <form method="POST" class="card p-4 shadow-sm">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div class="d-flex justify-content-between mt-3">
-            <a href="{% url 'timetable:view_timetable' %}" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-success">Save</button>
+<h2>Create Timetable Entry</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Day:</label>
+            {{ form.day }}
         </div>
-    </form>
-</div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Time Slot:</label>
+            {{ form.time_slot }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Subject:</label>
+            {{ form.subject }}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Teacher:</label>
+            {{ form.teacher }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Room:</label>
+            {{ form.room }}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Semester:</label>
+            {{ form.semester }}
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="form-check">
+            {{ form.active }}
+            <label class="form-check-label">Active</label>
+        </div>
+    </div>
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p>{{ field }}: {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="{% url 'timetable:dashboard' %}" class="btn btn-secondary">Cancel</a>
+</form>
 {% endblock %}
