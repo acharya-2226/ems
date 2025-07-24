@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Avg, Count
 from .forms import ResultForm
-from .models import Result, Student, Subject
+from .models import Result
+from core.models import Subject, Student
+
 
 
 @login_required

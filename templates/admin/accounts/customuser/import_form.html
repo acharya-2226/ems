@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  <h1>📤 Import Users from Excel</h1>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Import" class="default">
+  </form>
+{% endblock %}
+{% block extrastyle %}
+  <style>
+    .default {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .default:hover {
+      background-color: #0056b3;
+    }
+  </style>
+{% endblock %}

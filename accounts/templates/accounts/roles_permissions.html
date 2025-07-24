@@ -1,0 +1,21 @@
+
+{% extends 'base.html' %}
+{% block title %}Roles & Permissions{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-primary">🛠️ Roles & Permissions</h2>
+  <p>Manage user roles and permissions here.</p>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Assign Roles</h5>
+      <form method="post">
+        {% csrf_token %}
+        
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

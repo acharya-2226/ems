@@ -1,32 +1,371 @@
 {% extends 'base.html' %}
-{% block title %}Assignment Report{% endblock %}
+{% block title %}Assignment Reports{% endblock %}
 {% block content %}
 <div class="container mt-5">
-  <h2 class="text-primary">📈 Assignment Report</h2>
-  <p>Visual and tabular summary of assignment performances.</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">📊 Assignment Analytics & Reports</h2>
+        <div class="btn-group">
+            <button class="btn btn-outline-success" onclick="exportToCSV()">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+            <button class="btn btn-outline-primary" onclick="printReport()">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+    </div>
 
-  <canvas id="assignmentChart" width="400" height="200"></canvas>
+    <!-- Summary Statistics -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Assignments</h6>
+                            <h3 class="mb-0">{{ total_assignments }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Students</h6>
+                            <h3 class="mb-0">{{ total_students }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Avg. Completion Rate</h6>
+                            <h3 class="mb-0">{{ average_completion_rate|floatformat:1 }}%</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-chart-pie fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Avg. Grade</h6>
+                            <h3 class="mb-0">{{ average_grade|default:"N/A" }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-star fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Time Range -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-filter"></i> Report Filters</h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="date_from" class="form-label">From Date</label>
+                            <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date_to" class="form-label">To Date</label>
+                            <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sync"></i> Update Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-calendar"></i> Quick Filters</h6>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group w-100" role="group">
+                        <a href="?period=week" class="btn btn-outline-secondary">This Week</a>
+                        <a href="?period=month" class="btn btn-outline-secondary">This Month</a>
+                        <a href="?period=quarter" class="btn btn-outline-secondary">This Quarter</a>
+                        <a href="?" class="btn btn-outline-secondary">All Time</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar"></i> Assignment Completion Rates</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="completionChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-line"></i> Grade Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="gradeChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Performance Table -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-table"></i> Assignment Performance Overview</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="performanceTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Assignment</th>
+                            <th>Due Date</th>
+                            <th>Submissions</th>
+                            <th>Completion Rate</th>
+                            <th>Avg Score</th>
+                            <th>On Time</th>
+                            <th>Late</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignment_stats %}
+                        <tr>
+                            <td>
+                                <strong>{{ assignment.title }}</strong>
+                                <br><small class="text-muted">{{ assignment.description|truncatewords:6 }}</small>
+                            </td>
+                            <td>
+                                {% if assignment.due_date %}
+                                    {{ assignment.due_date|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="text-muted">No due date</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ assignment.submission_count }}</span>
+                            </td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ assignment.completion_rate }}%"
+                                         aria-valuenow="{{ assignment.completion_rate }}" 
+                                         aria-valuemin="0" aria-valuemax="100">
+                                        {{ assignment.completion_rate|floatformat:1 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if assignment.average_score %}
+                                    <strong>{{ assignment.average_score|floatformat:1 }}</strong>
+                                    {% if assignment.max_score %}
+                                        <small class="text-muted">/ {{ assignment.max_score }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">No grades yet</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-success">{{ assignment.on_time_count }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning">{{ assignment.late_count }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                No assignment data available for the selected period.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Performance Summary -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-user-graduate"></i> Top Performing Students</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for student in top_students %}
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <div class="mb-2">
+                                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px;">
+                                    {{ student.student.first_name|first|default:student.student.username|first }}
+                                </div>
+                            </div>
+                            <h6 class="card-title mb-1">
+                                {{ student.student.get_full_name|default:student.student.username }}
+                            </h6>
+                            <small class="text-muted d-block mb-2">{{ student.student.email }}</small>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <small class="text-muted">Avg Grade</small>
+                                    <div class="h5 mb-0 text-success">{{ student.average_grade|default:"N/A" }}</div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Submissions</small>
+                                    <div class="h5 mb-0 text-primary">{{ student.submission_count }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-muted text-center">No student performance data available yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
-const ctx = document.getElementById('assignmentChart').getContext('2d');
-const assignmentChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4'],
-        datasets: [{
-            label: 'Average Score',
-            data: [85, 90, 75, 88],
-            backgroundColor: 'rgba(54, 162, 235, 0.6)'
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: { beginAtZero: true }
+document.addEventListener('DOMContentLoaded', function() {
+    // Assignment Completion Rate Chart
+    const completionCtx = document.getElementById('completionChart').getContext('2d');
+    new Chart(completionCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for assignment in assignment_stats %}'{{ assignment.title|truncatewords:2 }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Completion Rate (%)',
+                data: [{% for assignment in assignment_stats %}{{ assignment.completion_rate|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
         }
-    }
+    });
+
+    // Grade Distribution Chart
+    const gradeCtx = document.getElementById('gradeChart').getContext('2d');
+    new Chart(gradeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['A', 'B', 'C', 'D', 'F'],
+            datasets: [{
+                data: [
+                    {{ grade_distribution.A|default:0 }},
+                    {{ grade_distribution.B|default:0 }},
+                    {{ grade_distribution.C|default:0 }},
+                    {{ grade_distribution.D|default:0 }},
+                    {{ grade_distribution.F|default:0 }}
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#17a2b8',
+                    '#ffc107',
+                    '#fd7e14',
+                    '#dc3545'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 });
+
+// Export functions
+function exportToCSV() {
+    const table = document.getElementById('performanceTable');
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        const row = [];
+        const cols = rows[i].querySelectorAll('td, th');
+        
+        for (let j = 0; j < cols.length; j++) {
+            row.push(cols[j].innerText.trim());
+        }
+        csv.push(row.join(','));
+    }
+    
+    const csvString = csv.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'assignment_report.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function printReport() {
+    window.print();
+}
 </script>
+
+<!-- Print Styles -->
+<style media="print">
+.btn, .card-header .btn-group {
+    display: none !important;
+}
+.card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+}
+</style>
 {% endblock %}

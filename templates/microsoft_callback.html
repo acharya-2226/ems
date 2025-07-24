@@ -1,0 +1,34 @@
+<!-- templates/microsoft_callback.html -->
+{% extends "base.html" %}
+{% block title %}Microsoft Authentication - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <h5>Processing Microsoft Authentication...</h5>
+          <p class="text-muted">Please wait while we complete your registration.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// This page can be used if you switch to redirect flow instead of popup
+// For now, it's just a placeholder that closes the popup
+if (window.opener) {
+    window.close();
+} else {
+    // Redirect to dashboard if not in popup
+    setTimeout(() => {
+        window.location.href = "{% url 'dashboard' %}";
+    }, 2000);
+}
+</script>
+{% endblock %}

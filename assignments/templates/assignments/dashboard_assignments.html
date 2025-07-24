@@ -1,51 +1,194 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Assignments Dashboard{% endblock %}
 {% block content %}
 <div class="container mt-5" role="main">
-  <h2 class="mb-4 text-primary">📝 Assignments Dashboard</h2>
-  <div class="row g-4">
-    <div class="col-md-4">
-      <a href="{% url 'assignments:upload_assignments' %}" class="text-decoration-none" aria-label="Upload Assignment">
-        <div class="card shadow-sm h-100 hover-shadow">
-          <div class="card-body">
-            <h5 class="card-title">📤 Upload Assignment</h5>
-            <p class="card-text text-muted">Add new assignments for students.</p>
-            <span class="btn btn-sm btn-primary mt-2">Go</span>
-          </div>
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="mb-4 text-primary">📝 Assignments Dashboard</h2>
         </div>
-      </a>
-    </div>
-    <div class="col-md-4">
-      <a href="{% url 'assignments:submissions_assignments' %}" class="text-decoration-none" aria-label="View Submissions">
-        <div class="card shadow-sm h-100 hover-shadow">
-          <div class="card-body">
-            <h5 class="card-title">📝 Submissions</h5>
-            <p class="card-text text-muted">Review submitted assignments.</p>
-            <span class="btn btn-sm btn-primary mt-2">Go</span>
-          </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'assignments:upload_assignments' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Assignment
+            </a>
         </div>
-      </a>
     </div>
-    <div class="col-md-4">
-      <a href="{% url 'assignments:report_assignments' %}" class="text-decoration-none" aria-label="Assignment Report">
-        <div class="card shadow-sm h-100 hover-shadow">
-          <div class="card-body">
-            <h5 class="card-title">📈 Assignment Report</h5>
-            <p class="card-text text-muted">View insights and stats on assignments.</p>
-            <span class="btn btn-sm btn-primary mt-2">Go</span>
-          </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Total Assignments</h5>
+                            <h3 class="mb-0">{{ total_assignments }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </a>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Total Submissions</h5>
+                            <h3 class="mb-0">{{ total_submissions }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-upload fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Pending Reviews</h5>
+                            <h3 class="mb-0">{{ pending_submissions }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Overdue</h5>
+                            <h3 class="mb-0">{{ overdue_assignments|default:0 }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <a href="{% url 'assignments:upload_assignments' %}" class="text-decoration-none" aria-label="Upload Assignment">
+                <div class="card shadow-sm h-100 hover-card">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-upload fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Upload Assignment</h5>
+                        <p class="card-text text-muted">Create and upload new assignments for students</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'assignments:submissions_assignments' %}" class="text-decoration-none" aria-label="Review Submissions">
+                <div class="card shadow-sm h-100 hover-card">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Review Submissions</h5>
+                        <p class="card-text text-muted">Grade and provide feedback on student work</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'assignments:report_assignments' %}" class="text-decoration-none" aria-label="View Reports">
+                <div class="card shadow-sm h-100 hover-card">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Analytics & Reports</h5>
+                        <p class="card-text text-muted">View detailed insights and performance metrics</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Assignments -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">📋 Recent Assignments</h5>
+                <a href="{% url 'assignments:view_assignments' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if recent_assignments %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Due Date</th>
+                                <th>Submissions</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in recent_assignments %}
+                            <tr>
+                                <td>
+                                    <strong>{{ assignment.title }}</strong>
+                                    <br><small class="text-muted">{{ assignment.description|truncatewords:8 }}</small>
+                                </td>
+                                <td>
+                                    {% if assignment.due_date %}
+                                        {{ assignment.due_date|date:"M d, Y H:i" }}
+                                        {% if assignment.is_overdue %}
+                                            <br><span class="badge bg-danger">Overdue</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">No due date</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ assignment.submission_count }}</span>
+                                </td>
+                                <td>
+                                    {% if assignment.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{% url 'assignments:edit_assignments' assignment.pk %}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No assignments found. <a href="{% url 'assignments:upload_assignments' %}">Create your first assignment</a>.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 <style>
-.hover-shadow:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
 }
 </style>
-
 {% endblock %}

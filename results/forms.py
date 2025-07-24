@@ -1,6 +1,12 @@
 from django import forms
+from django.apps import apps
 from .models import Result
+from django.utils.translation import gettext_lazy as _
 
+
+def get_student_queryset():
+    Student = apps.get_model('core', 'Student')
+    return Student.objects.all()
 
 class ResultForm(forms.ModelForm):
     class Meta:
@@ -58,9 +64,13 @@ class ResultForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['student'].empty_label = "Select Student"
-        self.fields['subject'].empty_label = "Select Subject"
-        self.fields['grade'].empty_label = "Select Grade"
+        if 'student' in self.fields:
+            self.fields['student'].queryset = get_student_queryset()
+            self.fields['student'].empty_label = "Select Student"
+        if 'subject' in self.fields:
+            self.fields['subject'].empty_label = "Select Subject"
+        if 'grade' in self.fields:
+            self.fields['grade'].empty_label = "Select Grade"
 
     def clean(self):
         cleaned_data = super().clean()
@@ -74,3 +84,5 @@ class ResultForm(forms.ModelForm):
                 raise forms.ValidationError("Marks obtained cannot exceed total marks.")
 
         return cleaned_data
+    
+    

@@ -1,61 +1,60 @@
 from django.db import models
 from django.conf import settings
-
-
-class Teacher(models.Model):    
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    def __str__(self):
-        return self.name
-
-class Subject(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=20, unique=True)
-    
-    def __str__(self):
-        return f"{self.name} ({self.code})"
-
-
-class Room(models.Model):
-    name = models.CharField(max_length=50)
-    capacity = models.IntegerField()
-    
-    def __str__(self):
-        return self.name
-
-
-class TimeSlot(models.Model):
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    
-    def __str__(self):
-        return f"{self.start_time} - {self.end_time}"
+from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Timetable(models.Model):
+    MONDAY = 'Mon'
+    TUESDAY = 'Tue'
+    WEDNESDAY = 'Wed'
+    THURSDAY = 'Thu'
+    FRIDAY = 'Fri'
+
     DAYS_CHOICES = [
-        ('monday', 'Monday'),
-        ('tuesday', 'Tuesday'),
-        ('wednesday', 'Wednesday'),
-        ('thursday', 'Thursday'),
-        ('friday', 'Friday'),
-        ('saturday', 'Saturday'),
-        ('sunday', 'Sunday'),
+        (MONDAY, 'Monday'),
+        (TUESDAY, 'Tuesday'),
+        (WEDNESDAY, 'Wednesday'),
+        (THURSDAY, 'Thursday'),
+        (FRIDAY, 'Friday'),
     ]
-    
-    day = models.CharField(max_length=10, choices=DAYS_CHOICES)
-    time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE, null=True, blank=True)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(
-        Teacher,
-        on_delete=models.CASCADE
+    # Fix imports to use core models
+    time_slot = models.ForeignKey('core.TimeSlot', on_delete=models.CASCADE, related_name='timetables', null=True, blank=True)
+    subject = models.ForeignKey('core.Subject', on_delete=models.CASCADE, related_name='timetables', null=True, blank=True)
+    teacher = models.ForeignKey('core.Teacher', on_delete=models.CASCADE, related_name='timetables', null=True, blank=True)
+    room = models.ForeignKey('core.Room', on_delete=models.CASCADE, related_name='timetables', null=True, blank=True)
+    day = models.CharField(
+        max_length=3,
+        choices=DAYS_CHOICES,
+        default=MONDAY
     )
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, default=1)  # Default added here
-    semester = models.IntegerField(default=1)  # Default added here
     active = models.BooleanField(default=True)
-
-    class Meta:
-        unique_together = ('day', 'time_slot', 'room')
-
-    def __str__(self):
-        return f"{self.day} {self.time_slot} - {self.subject}"
+    
+    # Add proper validation
+    semester = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(8)]
+    )
+    
+    def clean(self):
+        # Check for conflicts
+        conflicts = Timetable.objects.filter(
+            day=self.day,
+            time_slot=self.time_slot,
+            room=self.room,
+            active=True
+        ).exclude(id=self.id)
+        
+        if conflicts.exists():
+            raise ValidationError('Room is already booked for this time slot')
+        
+        # Check teacher availability
+        teacher_conflicts = Timetable.objects.filter(
+            day=self.day,
+            time_slot=self.time_slot,
+            teacher=self.teacher,
+            active=True
+        ).exclude(id=self.id)
+        
+        if teacher_conflicts.exists():
+            raise ValidationError('Teacher is already assigned for this time slot')

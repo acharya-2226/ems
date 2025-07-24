@@ -92,7 +92,7 @@ body {
 /* Day Headers */
 .day-header {
     background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-    color: white !important;
+    color: rgb(0, 0, 0) !important;
     font-size: 0.9rem;
 }
 

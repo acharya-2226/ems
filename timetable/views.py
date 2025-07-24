@@ -45,7 +45,7 @@ def create_timetable(request):
         form = TimetableForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('dashboard_timetable')
+            return redirect('timetable:dashboard_timetable')
     else:
         form = TimetableForm()
 
@@ -58,7 +58,7 @@ def edit_timetable(request, pk):
         form = TimetableForm(request.POST, instance=timetable)
         if form.is_valid():
             form.save()
-            return redirect('dashboard_timetable')
+            return redirect('timetable:dashboard_timetable')
     else:
         form = TimetableForm(instance=timetable)
 
@@ -70,7 +70,7 @@ def delete_timetable(request, pk):
     timetable = get_object_or_404(Timetable, pk=pk)
     if request.method == 'POST':
         timetable.delete()
-        return redirect('dashboard_timetable')
+        return redirect('timetable:dashboard_timetable')
     
     return render(request, 'timetable/delete_timetable.html', {'timetable': timetable})
 
@@ -92,7 +92,7 @@ def export_timetable(request):
 @login_required
 def download_timetable(request):
     # This function is not used in the current code, but can be implemented if needed
-    return redirect('view_timetable')
+    return redirect('timetable:view_timetable')
 
 @login_required
 def show_all_urls(request):

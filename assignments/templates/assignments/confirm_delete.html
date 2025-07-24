@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Delete Assignment{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Confirm Delete
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-warning"></i> Warning!
+                        </h5>
+                        <p class="mb-0">You are about to permanently delete this assignment. This action cannot be undone.</p>
+                    </div>
+
+                    <!-- Assignment Details -->
+                    <div class="bg-light p-3 rounded mb-4">
+                        <h5 class="text-danger mb-3">Assignment to Delete:</h5>
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Title:</strong></div>
+                            <div class="col-sm-8">{{ object.title }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Description:</strong></div>
+                            <div class="col-sm-8">{{ object.description|truncatewords:10 }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Due Date:</strong></div>
+                            <div class="col-sm-8">
+                                {% if object.due_date %}
+                                    {{ object.due_date|date:"M d, Y H:i" }}
+                                {% else %}
+                                    No due date set
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Created:</strong></div>
+                            <div class="col-sm-8">{{ object.created_at|date:"M d, Y H:i" }}</div>
+                        </div>
+                        {% if object.file %}
+                        <div class="row">
+                            <div class="col-sm-4"><strong>File:</strong></div>
+                            <div class="col-sm-8">
+                                <i class="fas fa-paperclip"></i> {{ object.file.name|slice:"20:" }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Impact Information -->
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle"></i> What will be deleted:
+                        </h6>
+                        <ul class="mb-0">
+                            <li>The assignment record</li>
+                            {% if object.file %}
+                                <li>Associated file: {{ object.file.name|slice:"20:" }}</li>
+                            {% endif %}
+                            {% if submission_count > 0 %}
+                                <li class="text-warning">
+                                    <strong>{{ submission_count }} student submission{{ submission_count|pluralize }}</strong>
+                                </li>
+                            {% endif %}
+                            <li>All related grades and feedback</li>
+                        </ul>
+                    </div>
+
+                    <!-- Submission Warning -->
+                    {% if submission_count > 0 %}
+                    <div class="alert alert-danger" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i> Student Submissions Alert
+                        </h6>
+                        <p class="mb-0">
+                            This assignment has <strong>{{ submission_count }} student submission{{ submission_count|pluralize }}</strong>. 
+                            Deleting this assignment will also remove all student work and grades!
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Confirmation Form -->
+                    <form method="POST" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <!-- Double Confirmation -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label text-danger" for="confirmDelete">
+                                <strong>I understand that this action cannot be undone</strong>
+                            </label>
+                        </div>
+
+                        {% if submission_count > 0 %}
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmSubmissions" required>
+                            <label class="form-check-label text-danger" for="confirmSubmissions">
+                                <strong>I understand that {{ submission_count }} student submission{{ submission_count|pluralize }} will be permanently deleted</strong>
+                            </label>
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a href="{% url 'assignments:assignment_detail' object.pk %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg" id="deleteBtn" disabled>
+                                <i class="fas fa-trash-alt"></i> Delete Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmDelete = document.getElementById('confirmDelete');
+    const confirmSubmissions = document.getElementById('confirmSubmissions');
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    function checkConfirmation() {
+        let allChecked = confirmDelete.checked;
+        
+        // If there are submissions, also check that confirmation
+        if (confirmSubmissions) {
+            allChecked = allChecked && confirmSubmissions.checked;
+        }
+        
+        deleteBtn.disabled = !allChecked;
+        
+        if (allChecked) {
+            deleteBtn.classList.remove('disabled');
+        } else {
+            deleteBtn.classList.add('disabled');
+        }
+    }
+    
+    confirmDelete.addEventListener('change', checkConfirmation);
+    if (confirmSubmissions) {
+        confirmSubmissions.addEventListener('change', checkConfirmation);
+    }
+    
+    // Add extra confirmation on submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!confirm('Are you absolutely sure you want to delete this assignment? This action is irreversible!')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

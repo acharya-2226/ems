@@ -3,6 +3,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -20,14 +23,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    
+    
 
     # Project apps
+    'core',
+    'accounts',
     'attendance',
     'results',
     'timetable',
     'assignments',
     'materials',
-    'users',
+    'django_extensions',  # For custom template tags
+    # 'users',
+    
 
     # Third-party
     'django.contrib.sites',
@@ -36,6 +46,11 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'crispy_bootstrap5',
+    'werkzeug',  # For development server
+    'allauth.socialaccount.providers.microsoft',
+    'widget_tweaks',  # For form field tweaks
+
+
 ]
 
 SITE_ID = 1
@@ -102,16 +117,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'  # Redirect after login
 LOGOUT_REDIRECT_URL = '/login/'  # Redirect after logout
 
@@ -129,4 +144,23 @@ if DEBUG:
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+
+# Microsoft Azure App Registration
+MICROSOFT_CLIENT_ID='1f1430a6-8a1d-4609-afa3-2a2ddc4f5e89'
+MICROSOFT_CLIENT_SECRET='4889d63d-b1db-4577-a5a4-26f6ec4430e5'
+
+MICROSOFT_TENANT_ID='ea26a399-1469-4413-bee8-5bfb879fc207'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'azuread': {
+        'APP': {
+            'client_id': '1f1430a6-8a1d-4609-afa3-2a2ddc4f5e89',
+            'secret': '4889d63d-b1db-4577-a5a4-26f6ec4430e5',
+            'key': ''
+        },
+        'AUTH_PARAMS': {
+            'tenant': 'ea26a399-1469-4413-bee8-5bfb879fc207'  # 👈 use your actual Tenant ID here
+        }
+    }
+}
 

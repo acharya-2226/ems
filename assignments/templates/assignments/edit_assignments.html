@@ -1,20 +1,127 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 {% block title %}Edit Assignment{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4 text-primary">✏️ Edit Assignment</h2>
-    <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm" novalidate>
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-          <div class="alert alert-danger">
-            {{ form.non_field_errors }}
-          </div>
-        {% endif %}
-        {{ form.as_p }}
-        <div class="d-flex justify-content-between mt-3">
-            <a href="{% url 'assignments:view_assignments' %}" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-success">Save</button>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">✏️ Edit Assignment</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                <i class="fas fa-heading"></i> Assignment Title *
+                            </label>
+                            {{ form.title|add_class:"form-control" }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="fas fa-align-left"></i> Description *
+                            </label>
+                            {{ form.description|add_class:"form-control" }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                                        <i class="fas fa-calendar"></i> Due Date
+                                    </label>
+                                    {{ form.due_date|add_class:"form-control" }}
+                                    {% if form.due_date.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.due_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.max_score.id_for_label }}" class="form-label">
+                                        <i class="fas fa-trophy"></i> Maximum Score
+                                    </label>
+                                    {{ form.max_score|add_class:"form-control" }}
+                                    {% if form.max_score.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.max_score.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.file.id_for_label }}" class="form-label">
+                                <i class="fas fa-paperclip"></i> Assignment File
+                            </label>
+                            {% if object.file %}
+                                <div class="mb-2">
+                                    <small class="text-muted">Current file: 
+                                        <a href="{{ object.file.url }}" target="_blank">{{ object.file.name|slice:"20:" }}</a>
+                                    </small>
+                                </div>
+                            {% endif %}
+                            {{ form.file|add_class:"form-control" }}
+                            <div class="form-text">Leave empty to keep current file. Supported formats: PDF, DOC, DOCX (Max size: 10MB)</div>
+                            {% if form.file.errors %}
+                                <div class="invalid-feedback d-block">{{ form.file.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.is_active|add_class:"form-check-input" }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    <i class="fas fa-toggle-on"></i> Assignment is active
+                                </label>
+                            </div>
+                            {% if form.is_active.errors %}
+                                <div class="invalid-feedback d-block">{{ form.is_active.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between pt-3">
+                            <div>
+                                <a href="{% url 'assignments:assignment_detail' object.pk %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Cancel
+                                </a>
+                                <a href="{% url 'assignments:delete_assignments' object.pk %}" 
+                                   class="btn btn-danger ms-2"
+                                   onclick="return confirm('Are you sure you want to delete this assignment?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> Update Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

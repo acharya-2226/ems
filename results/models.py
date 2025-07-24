@@ -1,48 +1,55 @@
 from django.db import models
-from django.conf import settings
-
-
-class Subject(models.Model):
-    name = models.CharField(max_length=100, blank=True, null=True)
-    code = models.CharField(max_length=20, unique=True, blank=True, null=True)
-    credits = models.IntegerField(default=3, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.name} ({self.code})"
-
-
-class Student(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='results_student')
-    roll_number = models.CharField(max_length=20, unique=True, blank=True, null=True)
-    department = models.CharField(max_length=50, blank=True, null=True)
-    year = models.IntegerField(blank=True, null=True)
-    semester = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user.get_full_name()} ({self.roll_number})"
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 
 class Result(models.Model):
-    GRADE_CHOICES = [
-        ('A+', 'A+ (90-100)'),
-        ('A', 'A (80-89)'),
-        ('B+', 'B+ (70-79)'),
-        ('B', 'B (60-69)'),
-        ('C+', 'C+ (50-59)'),
-        ('C', 'C (40-49)'),
-        ('D', 'D (30-39)'),
-        ('F', 'F (0-29)'),
-    ]
+    student = models.ForeignKey('core.Student', on_delete=models.CASCADE)
+    subject = models.ForeignKey('core.Subject', on_delete=models.CASCADE)
 
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True, null=True)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, blank=True, null=True)
-    marks_obtained = models.FloatField(blank=True, null=True)
-    total_marks = models.FloatField(default=100, blank=True, null=True)
-    grade = models.CharField(max_length=2, choices=GRADE_CHOICES, blank=True, null=True)
-    semester = models.IntegerField(blank=True, null=True)
-    year = models.IntegerField(blank=True, null=True)
-    published = models.BooleanField(default=False, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(default=timezone.now, editable=False)
+
+    marks_obtained = models.FloatField(validators=[MinValueValidator(0)], default=0)
+    total_marks = models.FloatField(validators=[MinValueValidator(1)], default=100)
+
+    grade = models.CharField(max_length=2, blank=True, default='')  # e.g. 'A+', 'B', etc.
+
+    semester = models.PositiveSmallIntegerField(default=1)
+    year = models.PositiveSmallIntegerField(default=timezone.now().year)
+
+    published = models.BooleanField(default=False)
+
+    def clean(self):
+        if self.marks_obtained > self.total_marks:
+            raise ValidationError('Marks obtained cannot exceed total marks')
+
+    def save(self, *args, **kwargs):
+        if self.marks_obtained is not None and self.total_marks:
+            percentage = (self.marks_obtained / self.total_marks) * 100
+            self.grade = self.calculate_grade(percentage)
+        # Update updated_at on each save
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def calculate_grade(self, percentage):
+        if percentage >= 90:
+            return 'A+'
+        elif percentage >= 80:
+            return 'A'
+        elif percentage >= 70:
+            return 'B+'
+        elif percentage >= 60:
+            return 'B'
+        elif percentage >= 50:
+            return 'C+'
+        elif percentage >= 40:
+            return 'C'
+        elif percentage >= 30:
+            return 'D'
+        else:
+            return 'F'
 
     class Meta:
         unique_together = ('student', 'subject', 'semester', 'year')

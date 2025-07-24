@@ -15,25 +15,32 @@ urlpatterns = [
     path('', home, name='dashboard'),
 
     # App-specific URLs
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('accounts/', include('accounts.urls')),  # Custom accounts app
+    path('accounts/', include('allauth.urls')),  # Use allauth for authentication
     
+    # Authentication - Use your custom views instead of Django's built-in ones
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='logout.html'), name='logout'),
+    
+    
+    # Other app URLs
+
     path('attendance/', include('attendance.urls')),
     path('results/', include('results.urls')),
     path('assignments/', include('assignments.urls')),
     path('timetable/', include('timetable.urls')),
     path('materials/', include('materials.urls')),
-    path('users/', include('users.urls')),
-    
+
+    # path('users/', include('users.urls')),
     
     path('help/', TemplateView.as_view(template_name='help.html'), name='help'),  # static help page
 
     # Developer tool
     path('show-all-urls/', staff_member_required(show_all_urls), name='show_all_urls'),
 
-    # Authentication
-    path('accounts/', include('django.contrib.auth.urls')),  # built-in login/logout
-    path('accounts/', include('allauth.urls')),              # django-allauth
+    # NOTE: Remove duplicate includes below - they conflict with your custom accounts app
+    # path('accounts/', include('django.contrib.auth.urls')),  # REMOVE - conflicts with accounts.urls
+    # path('accounts/', include('allauth.urls')),              # REMOVE - not needed unless using allauth
 ]
 
 # Media file handling in development

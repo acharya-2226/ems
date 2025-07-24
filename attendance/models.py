@@ -1,42 +1,49 @@
 from django.db import models
 from django.conf import settings
-
-
-class Subject(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=20)
-
-    def __str__(self):
-        return f"{self.name} ({self.code})"
-
-
-class Student(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='attendance_student')
-    roll_number = models.CharField(max_length=20)
-    department = models.CharField(max_length=50, blank=True, null=True)
-
-    def __str__(self):
-        # Use user's full name properly
-        return f"{self.user.get_full_name()} ({self.roll_number})"
-    
-    @property
-    def full_name(self):
-        return self.user.get_full_name()
-
+from django.db.models import Q
+from django.core.exceptions import ValidationError
+import re
+from django.utils import timezone
+from core.models import Student
 
 class AttendanceRecord(models.Model):
-    STATUS_CHOICES = (
+    STATUS_CHOICES = [
         ('Present', 'Present'),
         ('Absent', 'Absent'),
-    )
+        ('Late', 'Late'),
+        ('Excused', 'Excused'),
+    ]
 
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='attendance_records')
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    date = models.DateField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='attendance_records', null=True, blank=True)
+    subject = models.ForeignKey('core.Subject', on_delete=models.CASCADE, related_name='attendance_records', null=True, blank=True)
+    date = models.DateField(null=True, blank=True, default=timezone.now)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Present')
+    remarks = models.TextField(blank=True, null=True)
+    marked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='marked_attendances'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def clean(self):
+        from datetime import date, timedelta
+        if self.date is not None:
+            if self.date > date.today():
+                raise ValidationError("Cannot mark attendance for future dates")
+            if self.date < date.today() - timedelta(days=30):
+                raise ValidationError("Cannot mark attendance older than 30 days")
 
     class Meta:
         unique_together = ('student', 'subject', 'date')
+        ordering = ['-date', 'student__roll_number']
+        indexes = [
+            models.Index(fields=['date', 'subject']),
+            models.Index(fields=['student', 'date']),
+        ]
 
     def __str__(self):
         return f"{self.student} - {self.subject.code} - {self.date} - {self.status}"

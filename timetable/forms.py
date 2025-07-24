@@ -1,7 +1,10 @@
 from django import forms
-from .models import Timetable, Teacher
+from .models import Timetable
+from core.models import Teacher, Subject, Room, TimeSlot
 
 class TimetableFilterForm(forms.Form):
+    
+
     day = forms.ChoiceField(
         choices=[('', 'All Days')] + Timetable.DAYS_CHOICES,
         required=False,
@@ -16,7 +19,8 @@ class TimetableFilterForm(forms.Form):
         queryset=Teacher.objects.all(),
         required=False,
         empty_label="All Teachers",
-        label="Teacher"
+        label="Teacher",
+        
     )
 
 

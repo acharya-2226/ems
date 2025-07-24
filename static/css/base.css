@@ -33,7 +33,7 @@
   --primary-font-size: 2rem;
 
   /* Neutrals */
-  --light-color: #f8f9fa;
+  --light-color: #478fd8;
   --dark-color: #212529;
 }
 
@@ -56,7 +56,7 @@ body {
 /* Typography */
 h1, h3, h4, h5, h6 {
   font-weight: var(--heading-font-weight);
-  color: var(--light-color);
+  color: rgb(0, 0, 0);
 }
 
 h1 {
@@ -245,7 +245,9 @@ main {
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
-::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thu
+
+{
   background: var(--primary-color);
   border-radius: 4px;
 }

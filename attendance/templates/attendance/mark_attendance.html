@@ -1,63 +1,591 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Mark Attendance{% endblock %}
 
+{% block extra_css %}
+<link href="{% static 'attendance/css/style.css' %}" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-3">✅ Mark Attendance</h2>
-
-    <form method="POST" class="mb-4">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="{{ form.date.id_for_label }}" class="form-label">{{ form.date.label }}</label>
-                {{ form.date }}
-                {{ form.date.errors }}
-            </div>
-            <div class="col-md-6">
-                <label for="{{ form.subject.id_for_label }}" class="form-label">{{ form.subject.label }}</label>
-                {{ form.subject }}
-                {{ form.subject.errors }}
+<div class="container-fluid mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center animate__animated animate__fadeInDown">
+                <div>
+                    <h2 class="text-primary mb-1">
+                        <i class="fas fa-clipboard-check me-2"></i>Mark Attendance
+                    </h2>
+                    <p class="text-muted mb-0">Record student attendance for classes</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'attendance:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="toggleBulkMode()">
+                        <i class="fas fa-layer-group me-1"></i>Bulk Mode
+                    </button>
+                </div>
+                    <button class="btn btn-outline-primary" onclick="toggleBulkMode()">
+                        <i class="fas fa-layer-group me-1"></i>Bulk Mode
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
 
-        {% if students %}
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>#</th>
-                            <th>Student Name</th>
-                            <th>Roll No</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ student.full_name }}</td>
-                                <td>{{ student.roll_number }}</td>
-                                <td>
-                                    <select name="student_{{ student.id }}" class="form-select">
-                                        <option value="Present">Present</option>
-                                        <option value="Absent">Absent</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm animate__animated animate__fadeInUp">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-filter me-2"></i>Select Class Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="classSelectionForm" method="GET">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="subject" class="form-label fw-semibold">Subject</label>
+                                <select class="form-select form-select-lg" id="subject" name="subject" required>
+                                    <option value="">Select Subject</option>
+                                    {% for subject in subjects %}
+                                        <option value="{{ subject.id }}" {% if selected_subject.id == subject.id %}selected{% endif %}>
+                                            {{ subject.name }} ({{ subject.code }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="class_date" class="form-label fw-semibold">Date</label>
+                                <input type="date" class="form-control form-control-lg" id="class_date" name="date" 
+                                       value="{{ selected_date|default:'today' }}" max="{{ today }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="class_period" class="form-label fw-semibold">Period</label>
+                                <select class="form-select form-select-lg" id="class_period" name="period">
+                                    <option value="">Select Period</option>
+                                    {% for period in periods %}
+                                        <option value="{{ period.id }}" {% if selected_period.id == period.id %}selected{% endif %}>
+                                            {{ period.name }} ({{ period.start_time }} - {{ period.end_time }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">&nbsp;</label>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-search me-2"></i>Load Students
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
+    </div>
 
-            <button type="submit" class="btn btn-success mt-3">Submit Attendance</button>
-        {% else %}
-            <div class="alert alert-info mt-4" role="alert">
-                No students available to mark attendance.
+    {% if students %}
+    <!-- Quick Actions Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-success btn-sm" onclick="markAllPresent()">
+                                <i class="fas fa-check-double me-1"></i>Mark All Present
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="markAllAbsent()">
+                                <i class="fas fa-times me-1"></i>Mark All Absent
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="resetAll()">
+                                <i class="fas fa-undo me-1"></i>Reset All
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="attendance-summary">
+                                <small class="text-muted">Present: </small>
+                                <span class="badge bg-success" id="present-count">0</span>
+                                <small class="text-muted ms-2">Absent: </small>
+                                <span class="badge bg-danger" id="absent-count">0</span>
+                                <small class="text-muted ms-2">Total: </small>
+                                <span class="badge bg-info">{{ students.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+        </div>
+    </div>
+
+    <!-- Attendance Form -->
+    <form id="attendanceForm" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="subject" value="{{ selected_subject.id }}">
+        <input type="hidden" name="date" value="{{ selected_date }}">
+        <input type="hidden" name="period" value="{{ selected_period.id }}">
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm animate__animated animate__fadeInUp">
+                    <div class="card-header bg-white border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>Student List
+                                <span class="badge bg-primary ms-2">{{ students.count }} Students</span>
+                            </h5>
+                            <div class="d-flex gap-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="showPhotos">
+                                    <label class="form-check-label" for="showPhotos">
+                                        Show Photos
+                                    </label>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleGridView()">
+                                    <i class="fas fa-th" id="view-toggle-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-0">
+                        <!-- List View (Default) -->
+                        <div id="list-view" class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th width="5%">
+                                            <input type="checkbox" class="form-check-input" id="selectAll">
+                                        </th>
+                                        <th width="10%">Photo</th>
+                                        <th width="15%">Roll No</th>
+                                        <th width="30%">Student Name</th>
+                                        <th width="15%">Department</th>
+                                        <th width="25%">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr class="student-row" data-student-id="{{ student.id }}">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input student-checkbox" 
+                                                   value="{{ student.id }}">
+                                        </td>
+                                        <td>
+                                            <div class="student-photo">
+                                                {% if student.photo %}
+                                                    <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" 
+                                                         class="rounded-circle" width="40" height="40">
+                                                {% else %}
+                                                    <div class="avatar-placeholder">
+                                                        {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold">{{ student.roll_number }}</span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span class="fw-semibold">{{ student.user.get_full_name }}</span>
+                                                <br><small class="text-muted">{{ student.user.email }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ student.department|default:"N/A" }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group attendance-toggle" role="group">
+                                                <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                       id="present_{{ student.id }}" value="present">
+                                                <label class="btn btn-outline-success btn-sm" for="present_{{ student.id }}">
+                                                    <i class="fas fa-check me-1"></i>Present
+                                                </label>
+                                                
+                                                <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                       id="absent_{{ student.id }}" value="absent">
+                                                <label class="btn btn-outline-danger btn-sm" for="absent_{{ student.id }}">
+                                                    <i class="fas fa-times me-1"></i>Absent
+                                                </label>
+                                                
+                                                <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                       id="late_{{ student.id }}" value="late">
+                                                <label class="btn btn-outline-warning btn-sm" for="late_{{ student.id }}">
+                                                    <i class="fas fa-clock me-1"></i>Late
+                                                </label>
+                                            </div>
+                                            
+                                            <!-- Remarks input (hidden by default) -->
+                                            <div class="remarks-input mt-2" style="display: none;">
+                                                <input type="text" class="form-control form-control-sm" 
+                                                       name="remarks_{{ student.id }}" 
+                                                       placeholder="Add remarks (optional)">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Grid View (Hidden by default) -->
+                        <div id="grid-view" class="p-4" style="display: none;">
+                            <div class="row g-3">
+                                {% for student in students %}
+                                <div class="col-xl-3 col-lg-4 col-md-6">
+                                    <div class="card student-card h-100 border-0 shadow-sm" data-student-id="{{ student.id }}">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="student-photo mb-3">
+                                                {% if student.photo %}
+                                                    <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" 
+                                                         class="rounded-circle mb-2" width="60" height="60">
+                                                {% else %}
+                                                    <div class="avatar-placeholder-lg mb-2">
+                                                        {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <h6 class="card-title mb-1">{{ student.user.get_full_name }}</h6>
+                                            <p class="card-text mb-2">
+                                                <small class="text-muted">Roll: {{ student.roll_number }}</small><br>
+                                                <span class="badge bg-info">{{ student.department|default:"N/A" }}</span>
+                                            </p>
+                                            
+                                            <div class="d-grid gap-2">
+                                                <div class="btn-group-vertical attendance-toggle-grid" role="group">
+                                                    <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                           id="grid_present_{{ student.id }}" value="present">
+                                                    <label class="btn btn-outline-success btn-sm" for="grid_present_{{ student.id }}">
+                                                        <i class="fas fa-check me-1"></i>Present
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                           id="grid_absent_{{ student.id }}" value="absent">
+                                                    <label class="btn btn-outline-danger btn-sm" for="grid_absent_{{ student.id }}">
+                                                        <i class="fas fa-times me-1"></i>Absent
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                           id="grid_late_{{ student.id }}" value="late">
+                                                    <label class="btn btn-outline-warning btn-sm" for="grid_late_{{ student.id }}">
+                                                        <i class="fas fa-clock me-1"></i>Late
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Submit Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">Ready to Submit?</h5>
+                                <p class="text-muted mb-0">Make sure all attendance has been marked correctly.</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="saveDraft()">
+                                    <i class="fas fa-save me-2"></i>Save Draft
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg px-4">
+                                    <i class="fas fa-check-double me-2"></i>Submit Attendance
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
+    {% endif %}
 </div>
+
+<style>
+.student-row {
+    transition: all 0.3s ease;
+}
+
+.student-row:hover {
+    background-color: rgba(0,123,255,0.05);
+    transform: translateX(5px);
+}
+
+.student-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.avatar-placeholder-lg {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0 auto;
+}
+
+.attendance-toggle .btn-check:checked + .btn {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.attendance-toggle-grid .btn-check:checked + .btn {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.student-photo img {
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+.student-row:hover .student-photo img {
+    border-color: #007bff;
+}
+
+.remarks-input {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 100px;
+    }
+}
+
+.sticky-top {
+    background-color: rgba(248, 249, 250, 0.95) !important;
+    backdrop-filter: blur(10px);
+}
+
+.table-responsive {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.attendance-summary .badge {
+    font-size: 0.875rem;
+    padding: 0.5em 0.8em;
+}
+
+@media (max-width: 768px) {
+    .btn-group {
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        flex: 1;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .student-card {
+        margin-bottom: 1rem;
+    }
+    
+    .d-flex.gap-2 {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
+<script>
+let isGridView = false;
+let attendanceData = {};
+
+// Initialize Select2 for better dropdowns
+$(document).ready(function() {
+    $('#subject').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Search and select subject...',
+        allowClear: true
+    });
+    
+    // Initialize attendance tracking
+    updateAttendanceCount();
+    
+    // Event listeners
+    $('.attendance-toggle input[type="radio"]').change(updateAttendanceCount);
+    $('.attendance-toggle-grid input[type="radio"]').change(updateAttendanceCount);
+    
+    // Show/hide photos
+    $('#showPhotos').change(function() {
+        if (this.checked) {
+            $('.student-photo').show();
+        } else {
+            $('.student-photo').hide();
+        }
+    });
+    
+    // Select all functionality
+    $('#selectAll').change(function() {
+        $('.student-checkbox').prop('checked', this.checked);
+    });
+});
+
+// Toggle between list and grid view
+function toggleGridView() {
+    isGridView = !isGridView;
+    if (isGridView) {
+        $('#list-view').hide();
+        $('#grid-view').show();
+        $('#view-toggle-icon').removeClass('fa-th').addClass('fa-list');
+    } else {
+        $('#grid-view').hide();
+        $('#list-view').show();
+        $('#view-toggle-icon').removeClass('fa-list').addClass('fa-th');
+    }
+}
+
+// Mark all students as present
+function markAllPresent() {
+    $('input[type="radio"][value="present"]').prop('checked', true);
+    updateAttendanceCount();
+    showToast('All students marked as present', 'success');
+}
+
+// Mark all students as absent
+function markAllAbsent() {
+    $('input[type="radio"][value="absent"]').prop('checked', true);
+    updateAttendanceCount();
+    showToast('All students marked as absent', 'warning');
+}
+
+// Reset all attendance
+function resetAll() {
+    $('input[type="radio"]').prop('checked', false);
+    $('.remarks-input input').val('');
+    updateAttendanceCount();
+    showToast('All attendance reset', 'info');
+}
+
+// Update attendance count
+function updateAttendanceCount() {
+    const presentCount = $('input[type="radio"][value="present"]:checked').length;
+    const absentCount = $('input[type="radio"][value="absent"]:checked').length;
+    const lateCount = $('input[type="radio"][value="late"]:checked').length;
+    
+    $('#present-count').text(presentCount);
+    $('#absent-count').text(absentCount + lateCount);
+}
+
+// Save draft functionality
+function saveDraft() {
+    const formData = new FormData(document.getElementById('attendanceForm'));
+    
+    // Show loading state
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    btn.disabled = true;
+    
+    // Simulate API call (replace with actual implementation)
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        showToast('Draft saved successfully', 'success');
+    }, 2000);
+}
+
+// Toggle bulk mode
+function toggleBulkMode() {
+    // Implementation for bulk mode
+    showToast('Bulk mode will be implemented', 'info');
+}
+
+// Show toast notification
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+// Form submission with validation
+document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked');
+    const totalStudents = {{ students.count|default:"0" }};
+    
+    if (checkedInputs.length === 0) {
+        e.preventDefault();
+        showToast('Please mark attendance for at least one student', 'warning');
+        return;
+    }
+    
+    if (checkedInputs.length < totalStudents) {
+        const confirmSubmit = confirm(`You have marked attendance for ${checkedInputs.length} out of ${totalStudents} students. Do you want to continue?`);
+        if (!confirmSubmit) {
+            e.preventDefault();
+            return;
+        }
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+    submitBtn.disabled = true;
+});
+</script>
 {% endblock %}
