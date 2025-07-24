@@ -13,7 +13,6 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 import xlwt
@@ -24,12 +23,8 @@ from .forms import (
     UserProfileForm, AdminUserForm
 )
 from .forms import ExcelImportForm
-
 from .models import CustomUser
-from .forms import (
-    SignupForm, CustomAuthenticationForm, MicrosoftSignupForm, 
-    UserProfileForm, AdminUserForm
-)
+
 
 
 # Authentication Views
@@ -408,5 +403,44 @@ def roles_permissions(request):
     })          
 
 @login_required
-def signup(request):
-    return render(request, 'accounts/signup.html', {'form': form})  
+@user_passes_test(is_admin)
+def dashboard_users_simple(request):
+    users = CustomUser.objects.all()
+    return render(request, 'accounts/dashboard_users_simple.html', {'users': users})
+
+@user_passes_test(is_admin)
+def edit_user(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    if request.method == 'POST':
+        form = AdminUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"User {user.username} updated successfully!")
+            return redirect('accounts:dashboard_users')
+    else:
+        form = AdminUserForm(instance=user)
+    return render(request, 'accounts/edit_user.html', {'form': form, 'user_obj': user})
+
+@login_required
+def roles_permissions(request):
+    """User roles and permissions management."""
+    return render(request, 'accounts/roles_permissions.html', {
+        'role_choices': CustomUser.ROLE_CHOICES,
+    })
+
+@login_required
+def account_settings(request):
+    """User account settings view."""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Account settings updated successfully!')
+            return redirect('settings')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    return render(request, 'accounts/settings.html', {'form': form})
+

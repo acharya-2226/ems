@@ -18,17 +18,22 @@ from django.contrib.auth import get_user_model
 
 @login_required
 def dashboard_assignments(request):
-    """Enhanced dashboard with better analytics."""
-    recent_assignments = Assignment.objects.filter(is_active=True).order_by('-created_at')[:5]
-    
-    # Analytics
-    total_assignments = Assignment.objects.filter(is_active=True).count()
-    total_submissions = Submission.objects.count()
-    pending_submissions = Submission.objects.filter(status='pending').count()
-    overdue_assignments = Assignment.objects.filter(
-        due_date__lt=timezone.now(),
-        is_active=True
-    ).count()
+    try:
+        recent_assignments = Assignment.objects.filter(is_active=True).order_by('-created_at')[:5]
+        total_assignments = Assignment.objects.filter(is_active=True).count()
+        total_submissions = Submission.objects.count()
+        pending_submissions = Submission.objects.filter(status='pending').count()
+        overdue_assignments = Assignment.objects.filter(
+            due_date__lt=timezone.now(),
+            is_active=True
+        ).count()
+    except:
+        # Fallback values if database queries fail
+        recent_assignments = []
+        total_assignments = 0
+        total_submissions = 0
+        pending_submissions = 0
+        overdue_assignments = 0
     
     context = {
         'recent_assignments': recent_assignments,
@@ -194,13 +199,13 @@ def delete_assignments(request, pk):
         messages.success(request, f"Assignment '{assignment.title}' deleted successfully.")
         return redirect('assignments:dashboard_assignments')
     
-    return render(request, 'assignments/delete_assignment.html', {'assignment': assignment})
+    return render(request, 'assignments/confirm_delete.html', {'assignment': assignment})
 
 @method_decorator(login_required, name='dispatch')
 class EditAssignmentView(LoginRequiredMixin, UpdateView):
     model = Assignment
     form_class = AssignmentForm
-    template_name = 'assignments/edit_assignment.html'
+    template_name = 'assignments/edit_assignments.html'
     success_url = reverse_lazy('assignments:dashboard_assignments')
     
     def form_valid(self, form):
@@ -222,12 +227,18 @@ def submission_detail(request, pk):
 
 @login_required
 def download_submission_file(request, pk):
-    """Download a submission file."""
     submission = get_object_or_404(Submission, pk=pk)
-    file_path = submission.file.path
-    response = HttpResponse(open(file_path, 'rb').read(), content_type='application/octet-stream')
-    response['Content-Disposition'] = f'attachment; filename="{submission.file.name}"'
-    return response
+    try:
+        if submission.file and submission.file.path:
+            response = HttpResponse(
+                submission.file.read(), 
+                content_type='application/octet-stream'
+            )
+            response['Content-Disposition'] = f'attachment; filename="{submission.file.name}"'
+            return response
+    except:
+        messages.error(request, "File not found or corrupted.")
+        return redirect('assignments:submissions_assignments')
 
 @login_required
 def api_assignments(request):

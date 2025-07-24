@@ -25,8 +25,8 @@
         <td>Admin</td>
         <td>Full access to all system features.</td>
         <td>
-          <button class="btn btn-sm btn-warning" disabled>Edit</button>
-          <button class="btn btn-sm btn-danger" disabled>Delete</button>
+          <button class="btn btn-sm btn-warning" disabled data-bs-toggle="tooltip" title="Feature coming soon">Edit</button>
+          <button class="btn btn-sm btn-danger" disabled data-bs-toggle="tooltip" title="Feature coming soon">Delete</button>
         </td>
       </tr>
       <tr>
@@ -34,8 +34,8 @@
         <td>Teacher</td>
         <td>Manage courses and students.</td>
         <td>
-          <button class="btn btn-sm btn-warning" disabled>Edit</button>
-          <button class="btn btn-sm btn-danger" disabled>Delete</button>
+          <button class="btn btn-sm btn-warning" disabled data-bs-toggle="tooltip" title="Feature coming soon">Edit</button>
+          <button class="btn btn-sm btn-danger" disabled data-bs-toggle="tooltip" title="Feature coming soon">Delete</button>
         </td>
       </tr>
       <tr>
@@ -43,11 +43,22 @@
         <td>Student</td>
         <td>Access own coursework and grades.</td>
         <td>
-          <button class="btn btn-sm btn-warning" disabled>Edit</button>
-          <button class="btn btn-sm btn-danger" disabled>Delete</button>
+          <button class="btn btn-sm btn-warning" disabled data-bs-toggle="tooltip" title="Feature coming soon">Edit</button>
+          <button class="btn btn-sm btn-danger" disabled data-bs-toggle="tooltip" title="Feature coming soon">Delete</button>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <p class="text-muted mt-3"><em>Role management features coming soon in future updates.</em></p>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  });
+</script>
 {% endblock %}

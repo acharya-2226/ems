@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Delete Material{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-danger">🗑️ Delete Material</h2>
+  
+  <div class="card mt-4">
+    <div class="card-body">
+      <h5 class="card-title">{{ material.title|default:"Untitled Material" }}</h5>
+      <p class="card-text">{{ material.description|default:"No description available" }}</p>
+      <small class="text-muted">
+        Uploaded: {{ material.uploaded_at|date:"M d, Y" }}
+      </small>
+    </div>
+  </div>
+  
+  <div class="alert alert-warning mt-4">
+    <h4>⚠️ Are you sure?</h4>
+    <p>This action cannot be undone. The material and its file will be permanently deleted.</p>
+  </div>
+  
+  <div class="mt-4">
+    <form method="post" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">
+        🗑️ Yes, Delete Material
+      </button>
+    </form>
+    <a href="{% url 'materials:dashboard' %}" class="btn btn-secondary ml-2">
+      ❌ Cancel
+    </a>
+  </div>
+</div>
+{% endblock %}

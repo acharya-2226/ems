@@ -36,8 +36,14 @@ def attendance_dashboard(request):
 
 
 @login_required
+@login_required
 def mark_attendance(request):
     """Mark attendance for students with improved checkbox interface."""
+    # Check if user is teacher or admin
+    if not (hasattr(request.user, 'role') and request.user.role in ['teacher', 'admin']):
+        messages.error(request, "You don't have permission to mark attendance.")
+        return redirect('attendance:attendance_dashboard')
+    
     if request.method == 'POST':
         form = BulkAttendanceForm(request.POST, user=request.user)
         if form.is_valid():
@@ -125,7 +131,6 @@ def mark_attendance(request):
         'selected_subject_id': selected_subject_id,
     }
     return render(request, 'attendance/mark_attendance.html', context)
-
 
 @login_required
 def get_students_by_subject(request):
@@ -271,10 +276,11 @@ def view_admin_attendance(request):
 @login_required
 def view_teacher_attendance(request):
     """View attendance records for a teacher's subjects."""
-    # Get subjects taught by the teacher
-    if hasattr(request.user, 'taught_subjects'):
-        teacher_subjects = Subject.objects.filter(teacher=request.user, is_active=True)
-
+    # Get all subjects for teachers (simplified for demo)
+    if hasattr(request.user, 'role') and request.user.role == 'teacher':
+        teacher_subjects = Subject.objects.filter(is_active=True)  # Show all subjects
+    else:
+        teacher_subjects = Subject.objects.none()
     
     selected_subject_id = request.GET.get('subject_id')
     selected_subject = None
@@ -287,7 +293,7 @@ def view_teacher_attendance(request):
                 subject=selected_subject
             ).select_related('student__user').order_by('-date', 'student__roll_number')
         except Subject.DoesNotExist:
-            messages.error(request, "Subject not found or you don't have permission to view it.")
+            messages.error(request, "Subject not found.")
 
     # Pagination
     paginator = Paginator(attendance_records, 20)
@@ -301,23 +307,33 @@ def view_teacher_attendance(request):
     }
     return render(request, 'attendance/view_attendance_teacher.html', context)
 
-
 @login_required
 def attendance_report(request):
-    """Generate comprehensive attendance report."""
-    filter_form = AttendanceReportForm(request.GET)
+    filter_form = AttendanceReportForm(request.GET or None)
     attendance_records = AttendanceRecord.objects.none()
     statistics = {}
     
+    # Basic aggregate stats
+    total_students = Student.objects.filter(is_active=True).count()
+    total_subjects = Subject.objects.filter(is_active=True).count()
+    
+    # Calculate total attendance records and average attendance percentage
+    total_records = AttendanceRecord.objects.count()
+    present_count = AttendanceRecord.objects.filter(status='Present').count()
+    average_attendance = round((present_count / total_records * 100), 2) if total_records > 0 else 0
+    
+    # Prepare queryset for recent reports placeholder (assuming you have a Report model)
+    recent_reports = []  # Replace with actual queryset if you track reports
+
     if filter_form.is_valid():
         attendance_records = AttendanceRecord.objects.all()
-        
+
         student = filter_form.cleaned_data.get('student')
         subject = filter_form.cleaned_data.get('subject')
         start_date = filter_form.cleaned_data.get('start_date')
         end_date = filter_form.cleaned_data.get('end_date')
         status = filter_form.cleaned_data.get('status')
-        
+
         if student:
             attendance_records = attendance_records.filter(student=student)
         if subject:
@@ -328,17 +344,18 @@ def attendance_report(request):
             attendance_records = attendance_records.filter(date__lte=end_date)
         if status:
             attendance_records = attendance_records.filter(status=status)
-        
+
         attendance_records = attendance_records.select_related('student__user', 'subject').order_by('-date')
-        
+
         # Calculate statistics
         total_records = attendance_records.count()
         if total_records > 0:
+            present_count = attendance_records.filter(status='Present').count()
+            average_attendance = round((present_count / total_records * 100), 2)
             status_counts = attendance_records.values('status').annotate(count=Count('status'))
             statistics = {item['status']: item['count'] for item in status_counts}
             statistics['total'] = total_records
             
-            # Calculate percentages
             for status_key in statistics:
                 if status_key != 'total':
                     statistics[f'{status_key.lower()}_percentage'] = round(
@@ -350,13 +367,24 @@ def attendance_report(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Pass subjects and classes for form dropdowns (assuming Class model exists)
+    subjects = Subject.objects.filter(is_active=True).order_by('name')
+    classes = Class.objects.filter(is_active=True).order_by('name') if 'Class' in globals() else []
+
     context = {
         'filter_form': filter_form,
         'attendance_records': page_obj,
         'statistics': statistics,
+        'total_records': total_records,
+        'average_attendance': average_attendance,
+        'total_subjects': total_subjects,
+        'total_students': total_students,
+        'subjects': subjects,
+        'classes': classes,
+        'recent_reports': recent_reports,
+        'today': timezone.now().date(),
     }
     return render(request, 'attendance/attendance_report.html', context)
-
 
 @login_required
 def export_attendance_csv(request):

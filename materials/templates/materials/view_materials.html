@@ -4,5 +4,53 @@
 <div class="container mt-5">
   <h2 class="text-primary">📖 View Materials</h2>
   <p>Browse available learning resources and files.</p>
+  
+  {% if materials %}
+    <div class="row mt-4">
+      {% for material in materials %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ material.title|default:"Untitled Material" }}</h5>
+              <p class="card-text">{{ material.description|default:"No description available"|truncatewords:20 }}</p>
+              <small class="text-muted">
+                Uploaded: {{ material.uploaded_at|date:"M d, Y" }}
+              </small>
+              <div class="mt-3">
+                {% if material.file %}
+                  <a href="{{ material.file.url }}" class="btn btn-primary btn-sm" target="_blank">
+                    📄 View/Download
+                  </a>
+                {% endif %}
+                <a href="{% url 'materials:edit_material' material.pk %}" class="btn btn-secondary btn-sm">
+                  ✏️ Edit
+                </a>
+                <a href="{% url 'materials:delete_material' material.pk %}" class="btn btn-danger btn-sm">
+                  🗑️ Delete
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info mt-4">
+      <h4>📂 No Materials Found</h4>
+      <p>No learning materials have been uploaded yet.</p>
+      <a href="{% url 'materials:upload_material' %}" class="btn btn-primary">
+        📤 Upload First Material
+      </a>
+    </div>
+  {% endif %}
+  
+  <div class="mt-4">
+    <a href="{% url 'materials:dashboard' %}" class="btn btn-outline-primary">
+      🏠 Back to Dashboard
+    </a>
+    <a href="{% url 'materials:upload_material' %}" class="btn btn-success">
+      📤 Upload New Material
+    </a>
+  </div>
 </div>
 {% endblock %}

@@ -16,7 +16,7 @@ urlpatterns = [
 
     # App-specific URLs
     path('accounts/', include('accounts.urls')),  # Custom accounts app
-    path('accounts/', include('allauth.urls')),  # Use allauth for authentication
+    path('auth/', include('allauth.urls')),  # Use allauth for authentication
     
     # Authentication - Use your custom views instead of Django's built-in ones
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
@@ -38,9 +38,6 @@ urlpatterns = [
     # Developer tool
     path('show-all-urls/', staff_member_required(show_all_urls), name='show_all_urls'),
 
-    # NOTE: Remove duplicate includes below - they conflict with your custom accounts app
-    # path('accounts/', include('django.contrib.auth.urls')),  # REMOVE - conflicts with accounts.urls
-    # path('accounts/', include('allauth.urls')),              # REMOVE - not needed unless using allauth
 ]
 
 # Media file handling in development

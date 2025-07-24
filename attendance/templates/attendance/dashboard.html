@@ -21,11 +21,11 @@
                     <p class="text-muted mb-0">Welcome back, {{ user.first_name|default:user.username }}!</p>
                 </div>
                 <div class="d-flex align-items-center">
-                    <div class="me-4">
+                    <div class="me-4 clickable-element" onclick="showComingSoon('Real-time Clock Settings')">
                         <small class="text-muted d-block">Current Time</small>
                         <span class="fw-bold" id="current-time">{{ "now"|date:"H:i" }}</span>
                     </div>
-                    <div class="text-end">
+                    <div class="text-end clickable-element" onclick="showComingSoon('Calendar Integration')">
                         <small class="text-muted d-block">Today's Date</small>
                         <span class="fw-bold">{{ "now"|date:"F j, Y" }}</span>
                     </div>
@@ -37,7 +37,7 @@
     <!-- Statistics Cards -->
     <div class="row g-4 mb-5">
         <div class="col-xl-3 col-md-6">
-            <div class="card stats-card bg-gradient-primary text-white animate__animated animate__fadeInUp" data-aos-delay="100">
+            <div class="card stats-card bg-gradient-primary text-white animate__animated animate__fadeInUp clickable-element" data-aos-delay="100" onclick="showComingSoon('Detailed Student Analytics')">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -61,7 +61,7 @@
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="card stats-card bg-gradient-success text-white animate__animated animate__fadeInUp" data-aos-delay="200">
+            <div class="card stats-card bg-gradient-success text-white animate__animated animate__fadeInUp clickable-element" data-aos-delay="200" onclick="showComingSoon('Subject Management')">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -85,7 +85,7 @@
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="card stats-card bg-gradient-warning text-white animate__animated animate__fadeInUp" data-aos-delay="300">
+            <div class="card stats-card bg-gradient-warning text-white animate__animated animate__fadeInUp clickable-element" data-aos-delay="300" onclick="showComingSoon('Real-time Attendance Tracking')">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -110,7 +110,7 @@
         
         {% if student %}
         <div class="col-xl-3 col-md-6">
-            <div class="card stats-card bg-gradient-info text-white animate__animated animate__fadeInUp" data-aos-delay="400">
+            <div class="card stats-card bg-gradient-info text-white animate__animated animate__fadeInUp clickable-element" data-aos-delay="400" onclick="showComingSoon('Personal Performance Dashboard')">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -140,7 +140,7 @@
         </div>
         {% else %}
         <div class="col-xl-3 col-md-6">
-            <div class="card stats-card bg-gradient-info text-white animate__animated animate__fadeInUp" data-aos-delay="400">
+            <div class="card stats-card bg-gradient-info text-white animate__animated animate__fadeInUp clickable-element" data-aos-delay="400" onclick="showComingSoon('Advanced Analytics Dashboard')">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -179,10 +179,10 @@
                         <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#quickMarkModal">
                             <i class="fas fa-plus me-1"></i>Quick Mark
                         </button>
-                        <button class="btn btn-outline-info btn-sm" onclick="exportData()">
+                        <button class="btn btn-outline-info btn-sm" onclick="showComingSoon('Data Export Feature')">
                             <i class="fas fa-download me-1"></i>Export Data
                         </button>
-                        <button class="btn btn-outline-warning btn-sm" onclick="showNotifications()">
+                        <button class="btn btn-outline-warning btn-sm" onclick="showComingSoon('Notification System')">
                             <i class="fas fa-bell me-1"></i>Notifications 
                             <span class="badge bg-warning text-dark ms-1">{{ notification_count|default:0 }}</span>
                         </button>
@@ -205,7 +205,7 @@
                     </div>
                     <h5 class="card-title mb-3 fw-bold">Mark Attendance</h5>
                     <p class="card-text text-muted mb-4">Record student attendance for today's classes quickly and efficiently</p>
-                    <div class="mb-3">
+                    <div class="mb-3 clickable-element" onclick="showComingSoon('Class Schedule Integration')">
                         <small class="text-success fw-semibold">
                             <i class="fas fa-clock me-1"></i>{{ pending_classes|default:0 }} classes pending
                         </small>
@@ -213,7 +213,7 @@
                     <a href="{% url 'attendance:mark_attendance' %}" class="btn btn-success btn-lg px-4 rounded-pill">
                         <i class="fas fa-plus me-2"></i>Mark Now
                     </a>
-                    <div class="position-absolute top-0 end-0 m-3">
+                    <div class="position-absolute top-0 end-0 m-3 clickable-element" onclick="showComingSoon('Status Management')">
                         <span class="badge bg-success-soft text-success">Active</span>
                     </div>
                 </div>
@@ -231,7 +231,7 @@
                     </div>
                     <h5 class="card-title mb-3 fw-bold">View Records</h5>
                     <p class="card-text text-muted mb-4">Browse detailed attendance records, statistics, and historical data</p>
-                    <div class="mb-3">
+                    <div class="mb-3 clickable-element" onclick="showComingSoon('Database Statistics')">
                         <small class="text-primary fw-semibold">
                             <i class="fas fa-database me-1"></i>{{ total_records|default:1250 }} total records
                         </small>
@@ -262,7 +262,7 @@
                     </div>
                     <h5 class="card-title mb-3 fw-bold">Generate Reports</h5>
                     <p class="card-text text-muted mb-4">Create comprehensive attendance reports and detailed analytics</p>
-                    <div class="mb-3">
+                    <div class="mb-3 clickable-element" onclick="showComingSoon('Advanced Report Formats')">
                         <small class="text-warning fw-semibold">
                             <i class="fas fa-file-alt me-1"></i>PDF, Excel & CSV formats
                         </small>
@@ -270,7 +270,7 @@
                     <a href="{% url 'attendance:attendance_report' %}" class="btn btn-warning btn-lg px-4 rounded-pill">
                         <i class="fas fa-download me-2"></i>Generate
                     </a>
-                    <div class="position-absolute top-0 end-0 m-3">
+                    <div class="position-absolute top-0 end-0 m-3 clickable-element" onclick="showComingSoon('Feature Updates')">
                         <span class="badge bg-warning-soft text-warning">New</span>
                     </div>
                 </div>
@@ -288,7 +288,7 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-graduate me-2"></i>My Detailed Statistics
                         </h5>
-                        <button class="btn btn-outline-light btn-sm" onclick="toggleStatsView()">
+                        <button class="btn btn-outline-light btn-sm" onclick="showComingSoon('Expanded Statistics View')">
                             <i class="fas fa-expand me-1"></i>Expand
                         </button>
                     </div>
@@ -296,7 +296,7 @@
                 <div class="card-body p-4">
                     <div class="row text-center g-4">
                         <div class="col-lg-2 col-md-4 col-6">
-                            <div class="stat-item-modern">
+                            <div class="stat-item-modern clickable-element" onclick="showComingSoon('Detailed Attendance Breakdown')">
                                 <div class="stat-icon mb-2">
                                     <i class="fas fa-percentage text-success fa-2x"></i>
                                 </div>
@@ -308,7 +308,7 @@
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-4 col-6">
-                            <div class="stat-item-modern">
+                            <div class="stat-item-modern clickable-element" onclick="showComingSoon('Subject Details')">
                                 <div class="stat-icon mb-2">
                                     <i class="fas fa-book text-primary fa-2x"></i>
                                 </div>
@@ -320,7 +320,7 @@
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-4 col-6">
-                            <div class="stat-item-modern">
+                            <div class="stat-item-modern clickable-element" onclick="showComingSoon('Student Profile Management')">
                                 <div class="stat-icon mb-2">
                                     <i class="fas fa-id-card text-info fa-2x"></i>
                                 </div>
@@ -332,7 +332,7 @@
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-4 col-6">
-                            <div class="stat-item-modern">
+                            <div class="stat-item-modern clickable-element" onclick="showComingSoon('Department Information')">
                                 <div class="stat-icon mb-2">
                                     <i class="fas fa-building text-secondary fa-2x"></i>
                                 </div>
@@ -344,7 +344,7 @@
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-4 col-6">
-                            <div class="stat-item-modern">
+                            <div class="stat-item-modern clickable-element" onclick="showComingSoon('Attendance Calendar')">
                                 <div class="stat-icon mb-2">
                                     <i class="fas fa-calendar-check text-success fa-2x"></i>
                                 </div>
@@ -356,7 +356,7 @@
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-4 col-6">
-                            <div class="stat-item-modern">
+                            <div class="stat-item-modern clickable-element" onclick="showComingSoon('Absence Management')">
                                 <div class="stat-icon mb-2">
                                     <i class="fas fa-calendar-times text-danger fa-2x"></i>
                                 </div>
@@ -406,6 +406,34 @@
     </div>
 </div>
 
+<!-- Coming Soon Modal -->
+<div class="modal fade" id="comingSoonModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <div class="coming-soon-icon mb-3">
+                        <i class="fas fa-rocket fa-4x text-primary"></i>
+                    </div>
+                    <h3 class="text-primary fw-bold mb-3">Coming Soon!</h3>
+                    <h5 class="text-dark mb-3" id="featureName">Amazing Feature</h5>
+                    <p class="text-muted mb-4">We're working hard to bring you this exciting new feature. Stay tuned for updates!</p>
+                    <div class="coming-soon-animation">
+                        <div class="dots-container">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-lg px-4 rounded-pill" data-bs-dismiss="modal">
+                    <i class="fas fa-bell me-2"></i>Notify Me
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -422,6 +450,31 @@
 .bg-success-soft { background-color: rgba(40, 167, 69, 0.1) !important; }
 .bg-primary-soft { background-color: rgba(13, 110, 253, 0.1) !important; }
 .bg-warning-soft { background-color: rgba(255, 193, 7, 0.1) !important; }
+
+.clickable-element {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.clickable-element:hover {
+    transform: scale(1.02);
+    opacity: 0.8;
+}
+
+.clickable-element::after {
+    content: '🚀';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.clickable-element:hover::after {
+    opacity: 1;
+}
 
 .stats-card {
     transition: all 0.3s ease;
@@ -533,6 +586,63 @@
     border-radius: 50px !important;
 }
 
+/* Coming Soon Modal Styles */
+.coming-soon-icon {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+.dots-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    animation: dotPulse 1.5s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+    0%, 60%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    30% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+}
+
+#comingSoonModal .modal-content {
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
 @media (max-width: 768px) {
     .stat-item-modern {
         margin-bottom: 1rem;
@@ -551,6 +661,10 @@
     
     .stats-card:hover {
         transform: translateY(-5px);
+    }
+    
+    .clickable-element:hover {
+        transform: scale(1.01);
     }
 }
 
@@ -573,6 +687,12 @@
 
 .badge {
     animation: pulse 2s infinite;
+}
+
+/* Hover effect for clickable badges */
+.badge.clickable-element:hover {
+    transform: scale(1.1);
+    animation: none;
 }
 </style>
 {% endblock %}
@@ -611,24 +731,73 @@ function updateClock() {
     document.getElementById('current-time').textContent = timeString;
 }
 
+// Coming Soon functionality
+function showComingSoon(featureName) {
+    document.getElementById('featureName').textContent = featureName;
+    const modal = new bootstrap.Modal(document.getElementById('comingSoonModal'));
+    modal.show();
+    
+    // Add some celebration effects
+    createConfetti();
+}
+
+// Create confetti effect
+function createConfetti() {
+    const colors = ['#667eea', '#764ba2', '#11998e', '#38ef7d', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+    
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.top = '-10px';
+            confetti.style.borderRadius = '50%';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = '9999';
+            confetti.style.transition = 'all 3s ease-out';
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.style.top = window.innerHeight + 'px';
+                confetti.style.transform = 'rotate(720deg)';
+                confetti.style.opacity = '0';
+            }, 100);
+            
+            setTimeout(() => {
+                document.body.removeChild(confetti);
+            }, 3100);
+        }, i * 50);
+    }
+}
+
 // Utility functions
 function refreshDashboard() {
-    location.reload();
+    // Show loading indicator
+    const refreshBtn = event.target;
+    const originalHTML = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Simulate refresh delay
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
 }
 
 function exportData() {
-    // Implementation for data export
-    alert('Export functionality will be implemented');
+    showComingSoon('Data Export Feature');
 }
 
 function showNotifications() {
-    // Implementation for notifications
-    alert('Notifications panel will be shown here');
+    showComingSoon('Notification System');
 }
 
 function toggleStatsView() {
-    // Implementation for expanding stats view
-    alert('Expanded view will be implemented');
+    showComingSoon('Expanded Statistics View');
 }
 
 function proceedToMarkAttendance() {
@@ -639,7 +808,90 @@ function proceedToMarkAttendance() {
     
     if (subject && date) {
         window.location.href = `{% url 'attendance:mark_attendance' %}?subject=${subject}&date=${date}`;
+    } else {
+        showComingSoon('Smart Form Validation');
     }
+}
+
+// Add hover sound effects (optional)
+function playHoverSound() {
+    // Create a subtle hover sound
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+// Add click tracking for analytics
+function trackFeatureClick(featureName) {
+    console.log(`User clicked on: ${featureName}`);
+    // Here you can add analytics tracking code
+    // gtag('event', 'feature_click', {
+    //     'feature_name': featureName
+    // });
+}
+
+// Enhanced click handlers with tracking
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.clickable-element')) {
+        const element = e.target.closest('.clickable-element');
+        
+        // Add click effect
+        element.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            element.style.transform = '';
+        }, 150);
+        
+        // Optional: Play hover sound (uncomment if desired)
+        // playHoverSound();
+    }
+});
+
+// Add keyboard navigation for accessibility
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+        const focusedElement = document.activeElement;
+        if (focusedElement.classList.contains('clickable-element')) {
+            e.preventDefault();
+            focusedElement.click();
+        }
+    }
+});
+
+// Make clickable elements focusable for accessibility
+document.addEventListener('DOMContentLoaded', function() {
+    const clickableElements = document.querySelectorAll('.clickable-element');
+    clickableElements.forEach(element => {
+        if (!element.hasAttribute('tabindex')) {
+            element.setAttribute('tabindex', '0');
+        }
+        element.setAttribute('role', 'button');
+        element.setAttribute('aria-label', 'Click to view more information about this feature');
+    });
+});
+
+// Add loading states for better UX
+function addLoadingState(element) {
+    const originalContent = element.innerHTML;
+    element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    element.disabled = true;
+    
+    return function removeLoadingState() {
+        element.innerHTML = originalContent;
+        element.disabled = false;
+    };
 }
 
 // Initialize on page load
@@ -647,6 +899,46 @@ document.addEventListener('DOMContentLoaded', function() {
     animateCounters();
     updateClock();
     setInterval(updateClock, 1000); // Update clock every second
+    
+    // Add smooth scrolling to the page
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Add intersection observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    document.querySelectorAll('.animate__animated').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'all 0.6s ease-out';
+        observer.observe(el);
+    });
+    
+    // Show welcome message
+    setTimeout(() => {
+        console.log('🎉 Welcome to the Enhanced Attendance Dashboard!');
+        console.log('💡 Click on any stat card or element to see coming soon features!');
+    }, 1000);
+});
+
+// Add custom context menu for coming soon features
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.closest('.clickable-element')) {
+        e.preventDefault();
+        showComingSoon('Advanced Context Menu');
+    }
 });
 </script>
 {% endblock %}
